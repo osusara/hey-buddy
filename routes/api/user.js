@@ -5,7 +5,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
 
+const auth = require("../../middleware/auth");
 const User = require("../../models/User");
+const Profile = require("../../models/Profile");
 dotenv.config({ path: "./config/config.env" });
 
 // @route   POST api/user
@@ -34,13 +36,14 @@ router.post('/', [
       }] });
     }
 
-    // Encrypt password
     user = new User({
       username,
       email,
-      password
+      password,
+      score: 0,
     });
 
+    // Encrypt password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
 
@@ -48,8 +51,8 @@ router.post('/', [
 
     // Return JWT
     const payload = {
-      user: { id: user.id }
-    }
+      user: { id: user.id, active: user.active },
+    };
 
     jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {
       if(err) throw err;
@@ -59,6 +62,32 @@ router.post('/', [
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
     res.status(500).send('Server error')
+  }
+});
+
+// @route   PUT api/user
+// @desc    Activate/deactivate user
+// @access  Public
+router.put('/', auth, async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user.id });
+    const profile = await Profile.findOne({ user: req.user.id });
+
+    user.active = !user.active;
+    profile.active = !profile.active;
+
+    await user.save();
+    await profile.save();
+
+    if(user.active) {
+      return res.json(user);
+    } else {
+      return res.json({ msg: "Your profile is now deactivated!" });
+    }
+
+  } catch (error) {
+    console.log(`Error: ${error.message}`.red.bold);
+    res.status(500).send("Server error");
   }
 });
 

@@ -19,7 +19,9 @@ module.exports = function(req, res, next) {
 
     req.user = decoded.user;
     next();
+    
   } catch (error) {
+    console.log(`Error: ${error.message}`.red.bold);
     res.status(401).json({ msg: 'Authorization error' });
   }
 }

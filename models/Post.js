@@ -2,8 +2,16 @@ const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema({
   sender: {
-    type: Schema.Types.ObjectId,
-    ref: "users",
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "users",
+    },
+    name: {
+      type: String
+    },
+    text: {
+      type: String
+    },
   },
   dare: {
     type: Schema.Types.ObjectId,
@@ -11,13 +19,12 @@ const PostSchema = new mongoose.Schema({
   },
   reply: [
     {
-      receiver: {
+      user: {
         type: Schema.Types.ObjectId,
         ref: "users",
       },
       text: {
         type: String,
-        required: true,
       },
       done: {
         type: Boolean,

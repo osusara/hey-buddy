@@ -4,29 +4,29 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+  },
+  score: {
+    type: Number,
+    required: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   date: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   active: {
     type: Boolean,
-    default: true
+    default: true,
   },
-  admin: {
-    type: Boolean,
-    default: false
-  }
 });
 
 module.exports = User = mongoose.model('user', UserSchema);

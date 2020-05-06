@@ -59,7 +59,7 @@ router.post('/', [
 
     // Return JWT
     const payload = {
-      user: { id: user.id }
+      user: { id: user.id, active: user.active }
     }
 
     jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 360000 }, (err, token) => {

@@ -7,17 +7,17 @@ const PostSchema = new mongoose.Schema({
       ref: "users",
     },
     name: {
-      type: String
+      type: String,
     },
     text: {
-      type: String
+      type: String,
     },
   },
   dare: {
     type: Schema.Types.ObjectId,
     ref: "dares",
   },
-  reply: [
+  receivers: [
     {
       user: {
         type: Schema.Types.ObjectId,
@@ -33,6 +33,14 @@ const PostSchema = new mongoose.Schema({
       date: {
         type: Date,
         default: Date.now(),
+      },
+    },
+  ],
+  highfives: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: "users",
       },
     },
   ],

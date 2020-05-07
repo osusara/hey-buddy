@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const PostSchema = new mongoose.Schema({
   sender: {
     user: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "users",
     },
     name: {
@@ -14,13 +14,13 @@ const PostSchema = new mongoose.Schema({
     },
   },
   dare: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "dares",
   },
   receivers: [
     {
       user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "users",
       },
       text: {
@@ -39,7 +39,7 @@ const PostSchema = new mongoose.Schema({
   highfives: [
     {
       user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "users",
       },
     },

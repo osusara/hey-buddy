@@ -3,7 +3,8 @@ const router = express.Router();
 const { check, validationResult } = require("express-validator");
 
 const auth = require('../../middleware/auth');
-const userActivationCheck = require('../../middleware/userActivationCheck');
+const activationCheck = require('../../middleware/activationCheck');
+const userActivationCheck = require('../../functions/userActivationCheck');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
@@ -28,7 +29,7 @@ router.get("/me", auth, async (req, res) => {
 // @route   POST api/profile
 // @desc    Create or update profile
 // @access  Private
-router.post('/', [auth, [
+router.post('/', [auth, activationCheck, [
   check('name', "Name can't be empty").not().isEmpty()
 ]], async (req, res) => {
   const errors = validationResult(req);
@@ -87,7 +88,7 @@ router.post('/', [auth, [
 // @route   GET api/profile
 // @desc    Get all profiles
 // @access  Public
-router.get('/', async (req, res) => {
+router.get('/', [auth, activationCheck], async (req, res) => {
   try {
     const profiles = await Profile.find({ $and: [{ active: true }, { privacy: false }] })
       .populate("user", ["username, active"]);
@@ -103,8 +104,9 @@ router.get('/', async (req, res) => {
 // @route   GET api/profile/user/:user_id
 // @desc    Get profile by user id
 // @access  Public
-router.get('/user/:user_id', userActivationCheck, async (req, res) => {
+router.get('/user/:user_id', [auth, activationCheck], async (req, res) => {
   try {
+    userActivationCheck(req, res);
 
     // if user is active check the profile
     const profile = await Profile.findOne({
@@ -130,7 +132,7 @@ router.get('/user/:user_id', userActivationCheck, async (req, res) => {
 });
 
 // @route   DELETE api/profile
-// @desc    Delete profile, user & posts
+// @desc    Delete profile, user & posts permanently
 // @access  Private
 router.delete('/', auth, async (req, res) => {
   try {

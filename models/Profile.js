@@ -42,22 +42,6 @@ const ProfileSchema = new mongoose.Schema({
       type: String,
     },
   },
-  buddies: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-      },
-      special: {
-        type: Boolean,
-        default: false,
-      },
-      date: {
-        type: Date,
-        default: Date.now(),
-      },
-    },
-  ],
   privacy: {
     type: Boolean,
     default: true,

@@ -3,6 +3,7 @@ const router = express.Router();
 const { check, validationResult } = require("express-validator");
 
 const auth = require("../../middleware/auth");
+const activationCheck = require("../../middleware/activationCheck");
 const Profile = require("../../models/Profile");
 const Post = require("../../models/Post");
 const Dare = require("../../models/Dare");
@@ -10,7 +11,7 @@ const Dare = require("../../models/Dare");
 // @route   POST api/post
 // @desc    Create a post
 // @access  Private
-router.post("/", auth, async (req, res) => {
+router.post("/", [auth, activationCheck], async (req, res) => {
   try {
 
     // get sender profile
@@ -59,21 +60,20 @@ router.post("/", auth, async (req, res) => {
 // @route   GET api/post
 // @desc    Get posts
 // @access  Private
-router.get('/', auth, async (req, res) => {
+router.get("/", [auth, activationCheck], async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
 
-    let buddies = []
-    profile.buddies.map(buddy => {
+    let buddies = [];
+    profile.buddies.map((buddy) => {
       buddies.unshift(buddy.user);
     });
-    
+
     const posts = await Post.find({
-      sender: {user: { $in: buddies }}
+      sender: { user: { $in: buddies } },
     }).sort({ date: -1 });
 
     res.json(posts);
-
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
     res.status(500).send("Server error");
@@ -83,7 +83,7 @@ router.get('/', auth, async (req, res) => {
 // @route   GET api/post/me
 // @desc    Get my posts
 // @access  Private
-router.get('/me', auth, async (req, res) => {
+router.get('/me', [auth, activationCheck], async (req, res) => {
   try {    
     const posts = await Post
       .find({ sender: {user: req.user.id} })
@@ -100,7 +100,7 @@ router.get('/me', auth, async (req, res) => {
 // @route   GET api/post/:post_id
 // @desc    Get post by id
 // @access  Private
-router.get('/:post_id', auth, async (req, res) => {
+router.get('/:post_id', [auth, activationCheck], async (req, res) => {
   try {    
     const post = await Post.findById(req.params.post_id);
 
@@ -122,7 +122,7 @@ router.get('/:post_id', auth, async (req, res) => {
 // @route   DELETE api/post/:post_id
 // @desc    Delete a post
 // @access  Private
-router.delete('/:post_id', auth, async (req, res) => {
+router.delete('/:post_id', [auth, activationCheck], async (req, res) => {
   try {    
     const post = await Post.findById(req,params.post_id);
 
@@ -148,7 +148,7 @@ router.delete('/:post_id', auth, async (req, res) => {
 // @route   PUT api/post/like/:post_id
 // @desc    Highfive a post
 // @access  Private
-router.put('/like/:post_id', auth, async (req, res) => {
+router.put('/like/:post_id', [auth, activationCheck], async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
@@ -170,7 +170,7 @@ router.put('/like/:post_id', auth, async (req, res) => {
 // @route   PUT api/post/unlike/:post_id
 // @desc    Remove highfive from a post
 // @access  Private
-router.put('/unlike/:post_id', auth, async (req, res) => {
+router.put('/unlike/:post_id', [auth, activationCheck], async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
@@ -197,7 +197,7 @@ router.put('/unlike/:post_id', auth, async (req, res) => {
 // @route   PUT api/post/reply/:post_id
 // @desc    Reply a post
 // @access  Private
-router.put("/reply/:post_id", [auth, [
+router.put("/reply/:post_id", [auth, activationCheck, [
   check('text', 'Text can not be empty').not().isEmpty()
 ]], async (req, res) => {
 
@@ -225,7 +225,7 @@ router.put("/reply/:post_id", [auth, [
 // @route   DELETE api/post/reply/:post_id/:reply_id
 // @desc    Reply a post
 // @access  Private
-router.delete('/reply/:post_id/:reply_id', auth, async (req, res) => {
+router.delete('/reply/:post_id/:reply_id', [auth, activationCheck], async (req, res) => {
   try {
     const post = await Post.findById(req.params.post_id);
     const reply = post.receivers.find(receiver => receiver.id === req.params.reply_id);

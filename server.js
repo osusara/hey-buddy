@@ -17,6 +17,9 @@ app.use('/api/auth', require("./routes/api/auth"));
 app.use("/api/user", require("./routes/api/user"));
 app.use("/api/profile", require("./routes/api/profile"));
 app.use("/api/post", require("./routes/api/post"));
+// app.use("/api/buddy", require("./routes/api/buddy"));
+app.use("/api/_auth", require("./routes/api/_auth"));
+app.use("/api/admin", require("./routes/api/admin"));
 
 // In production environment
 if (process.env.NODE_ENV === "production") {

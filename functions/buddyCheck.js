@@ -1,14 +1,16 @@
 const Buddy = require('../models/Buddy');
 
-module.exports = async function (id, req, res) {
+module.exports = async function (req, res) {
   try {
-    const youBuddy = await Buddy.findById(req.user.id).select("-password");
+    const youBuddy = await Buddy.findOne({ user: req.user.id });
 
     if (!youBuddy)
-      return res.status(404).json({ msg: "User not found" });
+      return false;
 
-    if (youBuddy.buddies.some(buddy => buddy.user.toString() === id))
-      return true;
+    youBuddy.buddies.map(buddy => {
+      if(buddy.user.toString() === req.params.user_id)
+        return true;
+    });
 
     return false;
 

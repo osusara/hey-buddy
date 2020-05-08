@@ -1,24 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const { check, validationResult } = require("express-validator");
 
 const auth = require('../../middleware/auth');
 const activationCheck = require('../../middleware/activationCheck');
 const activeCheck = require('../../functions/activeCheck');
+const privacyCheck = require('../../functions/privacyCheck');
+const buddyCheck = require('../../functions/buddyCheck');
 const Buddy = require('../../models/Buddy');
-const User = require('../../models/User');
 
-// @route   GET api/profile/me
-// @desc    Get current user's profile
+// @route   GET api/buddy/me
+// @desc    Get current user's buddies
 // @access  Private
-router.get("/me", auth, async (req, res) => {
+router.get("/me", [auth, activationCheck], async (req, res) => {
   try {
-    const profile = await  Profile.findOne({ user: req.user.id }).populate('user', ['userename', 'active', 'date']);
-    if(!profile) {
-      return res.status(400).json({ msg: 'Your profile is not set' });
-    }
+    const youBuddy = await Buddy.findOne({ user: req.user.id });
 
-    res.json(profile);
+    if (!youBuddy || youBuddy.buddies.length === 0)
+      return res.status(400).json({ msg: "You have no buddy yet" });
+
+    res.json(youBuddy);
 
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
@@ -27,7 +27,7 @@ router.get("/me", auth, async (req, res) => {
 });
 
 // @route   POST api/buddy
-// @desc    Create or update buddy
+// @desc    Add buddy
 // @access  Private
 router.post('/', [auth, activationCheck], async (req, res) => {
   try {
@@ -39,8 +39,9 @@ router.post('/', [auth, activationCheck], async (req, res) => {
     if (!youBuddy)
       youBuddy = new Buddy({ user: req.user.id });
 
-    if(youBuddy.buddies.some((buddy) => buddy.user.toString() === req.body.buddy))
-      return res.status(400).json({ msg: 'Already a buddy' });
+    if(youBuddy.buddies.some( async buddy => buddy.user.toString() === req.body.buddy)){
+      return res.status(400).json({ msg: 'User already your buddy' });
+    }
     
     youBuddy.buddies.unshift({ user: req.body.buddy });
 
@@ -54,15 +55,54 @@ router.post('/', [auth, activationCheck], async (req, res) => {
  
 });
 
-// @route   GET api/profile
-// @desc    Get all profiles
-// @access  Public
-router.get('/', [auth, activationCheck], async (req, res) => {
+// @route   GET api/buddy/:user_id
+// @desc    Get buddies by user id
+// @access  Private
+router.get('/:user_id', [auth, activationCheck], async (req, res) => {
   try {
-    const profiles = await Profile.find({ $and: [{ active: true }, { privacy: false }] })
-      .populate("user", ["username, active"]);
+    // check if the user is active
+    activeCheck(req, res);
+    
+    // check if the user is private or not a buddy
+    if(await privacyCheck(req, res) && !(await buddyCheck(req, res)))
+      return res.status(401).json({ msg: "User is private" });
 
-    res.json(profiles);
+    // if user is active check the profile
+    const buddy = await Buddy.findOne({ user: req.params.user_id });
+
+    if (!buddy || buddy.buddies.length === 0)
+      return res.status(404).json({ msg: "User haven't any buddy" });
+
+    res.json(buddy);
+
+  } catch (error) {
+    console.log(`Error: ${error.message}`.red.bold);
+
+    if(error.kind == 'ObjectId')
+      return res.status(400).json({ msg: "User is not available" });
+
+    res.status(500).send("Server error");
+  }
+});
+
+// @route   PUT api/buddy/:user_id
+// @desc    Remove buddy
+// @access  Private
+router.put('/:user_id', [auth, activationCheck], async (req, res) => {
+  try {
+    let youBuddy = await Buddy.findOne({ user: req.user.id });
+
+    if(youBuddy.buddies.filter(buddy => buddy.user.toString() === req.params.user_id).length === 0)
+      return res.status(400).json({ msg: 'User already not your buddy' });
+
+    const removeIndex = youBuddy.buddies
+      .map((buddy) => buddy.user.toString())
+      .indexOf(req.params.user_id);
+
+    youBuddy.buddies.splice(removeIndex, 1);
+
+    await youBuddy.save();
+    res.json(youBuddy);
 
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
@@ -70,47 +110,23 @@ router.get('/', [auth, activationCheck], async (req, res) => {
   }
 })
 
-// @route   GET api/profile/user/:user_id
-// @desc    Get profile by user id
-// @access  Public
-router.get('/user/:user_id', [auth, activationCheck], async (req, res) => {
-  try {
-    activeCheck(req, res);
-
-    // if user is active check the profile
-    const profile = await Profile.findOne({
-      $and: [
-        { user: req.params.user_id },
-        { $or: [{ privacy: false }, { buddies: { $elemMatch: { user: req.params.user_id } } }] },
-      ],
-    }).populate("user", ["username, active"]);
-
-    if(!profile)
-      return res.status(400).json({ msg: 'This profile is private or not set' });
-
-    res.json(profile);
-
-  } catch (error) {
-    console.log(`Error: ${error.message}`.red.bold);
-
-    if(error.kind == 'ObjectId')
-      return res.status(400).json({ msg: "Profile is not available" });
-
-    res.status(500).send("Server error");
-  }
-});
-
-// @route   DELETE api/profile
-// @desc    Delete profile, user & posts permanently
+// @route   PUT api/buddy/special/:user_id
+// @desc    Make buddy special/unspecial
 // @access  Private
-router.delete('/', auth, async (req, res) => {
+router.put('/special/:user_id', [auth, activationCheck], async (req, res) => {
   try {
-    // @todo remove user and posts
+    let youBuddy = await Buddy.findOne({ user: req.user.id });
 
-    await Profile.findOneAndRemove({ user: req.user.id });
-    await User.findOneAndRemove({ _id: req.user.id });
+    if(youBuddy.buddies.filter(buddy => buddy.user.toString() === req.params.user_id).length === 0)
+      return res.status(400).json({ msg: 'User is not your buddy' });
 
-    res.json({ msg: 'User deleted permenently' });
+    youBuddy.buddies.map(async buddy => {
+      if(buddy.user.toString() === req.params.user_id)
+        buddy.special = !buddy.special;
+    });
+
+    await youBuddy.save();
+    return res.json(youBuddy);
 
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);

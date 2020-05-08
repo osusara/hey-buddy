@@ -4,6 +4,8 @@ const { check, validationResult } = require("express-validator");
 
 const auth = require("../../middleware/auth");
 const activationCheck = require("../../middleware/activationCheck");
+const buddyCheck = require("../../functions/buddyCheck");
+const privacyCheck = require("../../functions/privacyCheck");
 const Profile = require("../../models/Profile");
 const Post = require("../../models/Post");
 const Dare = require("../../models/Dare");
@@ -23,16 +25,20 @@ router.post("/", [auth, activationCheck], async (req, res) => {
     );
     
     let receivers = [];
-    req.body.receivers.forEach((receiver) => {
-      // const user = await Profile.findOne({$and: [
-      //   { user: receiver.user },
+    req.body.receivers.split(",").map( async (receiver) => {
+      if (buddyCheck(receiver, req, res) || privacyCheck(receiver, res))
+        receivers.unshift({ user: receiver });
+
+
+      // const profile = await Profile.findOne({$and: [
+      //   { user: receiver },
       //   { $or: [
       //     { privacy: false },
-      //     { buddies: { $elemMatch: { user: req.params.user_id } } }
-      //   ]},
-      // ],}).populate("user", ["username, active"]);
+      //     { buddies: { $elemMatch: { user: req.user.id }}}
+      //   ]}
+      // ]});
 
-      receivers.unshift({ user: receiver });
+      // if(profile) receivers.unshift({ user: receiver });
     });
 
 
@@ -124,7 +130,7 @@ router.get('/:post_id', [auth, activationCheck], async (req, res) => {
 // @access  Private
 router.delete('/:post_id', [auth, activationCheck], async (req, res) => {
   try {    
-    const post = await Post.findById(req,params.post_id);
+    const post = await Post.findById(req.params.post_id);
 
     if(!post)
       return res.status(404).json({ msg: 'Post not found' });

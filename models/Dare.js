@@ -4,6 +4,7 @@ const DareSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
+    unique: true,
   },
   text: {
     type: String,
@@ -16,6 +17,10 @@ const DareSchema = new mongoose.Schema({
   level: {
     type: Number,
     required: true,
+  },
+  tags: {
+    type: [String],
+    require: true
   },
   date: {
     type: Date,

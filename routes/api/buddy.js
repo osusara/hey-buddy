@@ -3,9 +3,9 @@ const router = express.Router();
 
 const auth = require('../../middleware/auth');
 const activationCheck = require('../../middleware/activationCheck');
-const activeCheck = require('../../functions/activeCheck');
-const privacyCheck = require('../../functions/privacyCheck');
-const buddyCheck = require('../../functions/buddyCheck');
+const activeCheck = require('../../utils/activeCheck');
+const privacyCheck = require('../../utils/privacyCheck');
+const buddyCheck = require('../../utils/buddyCheck');
 const Buddy = require('../../models/Buddy');
 
 // @route   GET api/buddy/me
@@ -64,7 +64,7 @@ router.get('/:user_id', [auth, activationCheck], async (req, res) => {
     activeCheck(req, res);
     
     // check if the user is private or not a buddy
-    if(await privacyCheck(req, res) && !(await buddyCheck(req, res)))
+    if(await privacyCheck(req.params.user_id, req, res) && !(await buddyCheck(req.params.user_id, req, res)))
       return res.status(401).json({ msg: "User is private" });
 
     // if user is active check the profile

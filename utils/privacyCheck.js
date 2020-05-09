@@ -1,8 +1,8 @@
 const Profile = require('../models/Profile');
 
-module.exports = async function (req, res) {
+module.exports = async function (id, req, res) {
   try {
-    const profile = await Profile.findOne({ user: req.params.user_id }, { privacy: 1});
+    const profile = await Profile.findOne({ user: id }, { privacy: 1});
 
     if (!profile)
       return res.status(404).json({ msg: "User not found" });

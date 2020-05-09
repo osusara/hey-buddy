@@ -1,23 +1,15 @@
 const mongoose = require("mongoose");
 
-const PostSchema = new mongoose.Schema({
-  sender: {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
-    },
-    name: {
-      type: String,
-    },
-    text: {
-      type: String,
-    },
-  },
-  dare: {
+const ChallengeSchema = new mongoose.Schema({
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "dares",
+    ref: "users",
   },
-  receivers: [
+  text: {
+    type: String,
+    required: true
+  },
+  replies: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,10 +17,7 @@ const PostSchema = new mongoose.Schema({
       },
       text: {
         type: String,
-      },
-      done: {
-        type: Boolean,
-        default: false,
+        required: true
       },
       date: {
         type: Date,
@@ -54,4 +43,4 @@ const PostSchema = new mongoose.Schema({
   },
 });
 
-module.exports = Post = mongoose.model("post", PostSchema);
+module.exports = Challenge = mongoose.model("challenge", ChallengeSchema);

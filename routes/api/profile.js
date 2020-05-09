@@ -4,7 +4,7 @@ const { check, validationResult } = require("express-validator");
 
 const auth = require('../../middleware/auth');
 const activationCheck = require('../../middleware/activationCheck');
-const activeCheck = require('../../functions/activeCheck');
+const activeCheck = require('../../utils/activeCheck');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
@@ -106,7 +106,7 @@ router.get('/', [auth, activationCheck], async (req, res) => {
 // @access  Public
 router.get('/user/:user_id', [auth, activationCheck], async (req, res) => {
   try {
-    userActivationCheck(req, res);
+    activeCheck(req, res);
 
     // if user is active check the profile
     const profile = await Profile.findOne({

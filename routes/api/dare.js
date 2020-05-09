@@ -54,7 +54,7 @@ router.get("/", [_auth, _activationCheck], async (req, res) => {
 });
 
 // @route   GET api/dare/me
-// @desc    Get my daress
+// @desc    Get my dares
 // @access  Private
 router.get("/me", [_auth, _activationCheck], async (req, res) => {
   try {

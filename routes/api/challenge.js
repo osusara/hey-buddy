@@ -18,10 +18,6 @@ const Dare = require("../../models/Dare");
 // @access  Private
 router.post("/", [auth, activationCheck], async (req, res) => {
   try {
-
-    // get sender profile
-    const profile = await Profile.findOne({ user: req.user.id});
-
     // get a random dare
     const dare = await Dare.aggregate([{ $sample: {size: 1}}]);
     
@@ -34,14 +30,14 @@ router.post("/", [auth, activationCheck], async (req, res) => {
     const newChallenge = new Challenge({
       sender: {
         user: req.user.id,
-        name: profile.name,
+        name: req.user.id,
         text: req.body.text,
       },
       dare: dare[0]._id,
       receivers: receivers,
     });
 
-    const challenge = await newChallenge.save()
+    await newChallenge.save()
     res.json(newChallenge);
 
   } catch (error) {
@@ -65,9 +61,9 @@ router.get("/", [auth, activationCheck], async (req, res) => {
       buddies.unshift(buddy.user);
     });
 
-    const challenges = await Challenge.find({
-      'sender.user': { $in: buddies },
-    }).sort({ date: -1 });
+    const challenges = await Challenge
+      .find({ 'sender.user': { $in: buddies } })
+      .sort({ date: -1 }).limit(20);
 
     res.json(challenges);
 
@@ -84,7 +80,7 @@ router.get('/me', [auth, activationCheck], async (req, res) => {
   try {    
     const challenges = await Challenge
       .find({ 'sender.user': req.user.id })
-      .sort({ date: -1 });
+      .sort({ date: -1 }).limit(20);
 
     res.json(challenges);
 
@@ -146,7 +142,7 @@ router.delete('/:challenge_id', [auth, activationCheck], async (req, res) => {
 });
 
 // @route   PUT api/challenge/:challenge_id
-// @desc    Reply a challenge
+// @desc    Close/unclose a challenge
 // @access  Private
 router.put("/:challenge_id", [auth, activationCheck], async (req, res) => {
   try {

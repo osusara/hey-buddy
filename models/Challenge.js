@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const PostSchema = new mongoose.Schema({
+const ChallengeSchema = new mongoose.Schema({
   sender: {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -46,4 +46,4 @@ const PostSchema = new mongoose.Schema({
   },
 });
 
-module.exports = Post = mongoose.model("post", PostSchema);
+module.exports = Challenge = mongoose.model("challenge", ChallengeSchema);

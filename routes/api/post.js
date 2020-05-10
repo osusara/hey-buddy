@@ -7,7 +7,6 @@ const auth = require("../../middleware/auth");
 const activationCheck = require("../../middleware/activationCheck");
 const buddyCheck = require("../../utils/buddyCheck");
 const privacyCheck = require("../../utils/privacyCheck");
-const activeCheck = require("../../utils/activeCheck");
 const Profile = require("../../models/Profile");
 const Buddy = require("../../models/Buddy");
 const Post = require("../../models/Post");
@@ -16,35 +15,25 @@ const Dare = require("../../models/Dare");
 // @route   POST api/post
 // @desc    Create a post
 // @access  Private
-router.post("/", [auth, activationCheck], async (req, res) => {
+router.post("/", [auth, activationCheck, [
+  check('text', 'Text can not be empty').not().isEmpty()
+]], async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty())
+    return res.status(400).json({ errors: errors.array });
+
   try {
-    // get sender profile
-    const profile = await Profile.findOne({ user: req.user.id });
-
-    // get a random dare
-    const dare = await Dare.aggregate([{ $sample: { size: 1 } }]);
-
-    let receivers = [];
-    req.body.receivers.split(",").map(async (receiver) => {
-      if (
-        !(await privacyCheck(ObjectId(receiver), req, res)) ||
-        (await buddyCheck(ObjectId(receiver), req, res))
-      )
-        receivers.unshift({ user: ObjectId(receiver) });
-    });
 
     const newPost = new Post({
-      sender: {
-        user: req.user.id,
-        name: profile.name,
-        text: req.body.text,
-      },
-      dare: dare[0]._id,
-      receivers: receivers,
+      user: req.user.id,
+      text: req.body.text,
+      name: req.user.name
     });
 
-    // const post = await newPost.save()
-    res.json(newPost);
+    const post = await newPost.save();
+    res.json(post);
+
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
     res.status(500).send("Server error");
@@ -65,11 +54,12 @@ router.get("/", [auth, activationCheck], async (req, res) => {
       buddies.unshift(buddy.user);
     });
 
-    const posts = await Post.find({
-      "sender.user": { $in: buddies },
-    }).sort({ date: -1 });
+    const posts = await Post
+      .find({ user: { $in: buddies } })
+      .sort({ date: -1 }).limit(20);
 
     res.json(posts);
+
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
     res.status(500).send("Server error");
@@ -81,11 +71,12 @@ router.get("/", [auth, activationCheck], async (req, res) => {
 // @access  Private
 router.get("/me", [auth, activationCheck], async (req, res) => {
   try {
-    const posts = await Post.find({
-      "sender.user": req.user.id,
-    }).sort({ date: -1 });
+    const posts = await Post
+      .find({ user: req.user.id })
+      .sort({ date: -1 }).limit(20);
 
     res.json(posts);
+
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
     res.status(500).send("Server error");
@@ -101,13 +92,11 @@ router.get("/:post_id", [auth, activationCheck], async (req, res) => {
 
     if (!post) return res.status(404).json({ msg: "Post not found" });
 
-    if (
-      (await privacyCheck(post.sender.user, req, res)) &&
-      !(await buddyCheck(post.sender.user, req, res))
-    )
+    if ((await privacyCheck(post.user, req, res)) && !(await buddyCheck(post.user, req, res)))
       return res.status(401).json({ msg: "User is private" });
 
     res.json(post);
+
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
 
@@ -127,11 +116,12 @@ router.delete("/:post_id", [auth, activationCheck], async (req, res) => {
 
     if (!post) return res.status(404).json({ msg: "Post not found" });
 
-    if (post.sender.user.toString() !== req.user.id)
+    if (post.user.toString() !== req.user.id)
       return res.status(401).json({ msg: "User not authorized" });
 
     await post.remove();
     res.json({ msg: "Post removed" });
+
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
 
@@ -147,22 +137,20 @@ router.delete("/:post_id", [auth, activationCheck], async (req, res) => {
 // @access  Private
 router.put("/like/:post_id", [auth, activationCheck], async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.post_id);
 
     // check if already high fived
-    if (
-      post.highfives.filter(
-        (highfive) => highfive.user.toString() === req.user.id
-      ).length > 0
-    )
-      return res
-        .status(400)
-        .json({ msg: "Post has already been high fived" });
+    if (post.highfives.filter(highfive => highfive.user.toString() === req.user.id).length > 0)
+      return res.status(400).json({ msg: "Post has already been high fived" });
 
-    post.highfives.unshift({ user: req.user.id });
+    post.highfives.unshift({
+      user: req.user.id,
+      name: req.user.name,
+    });
 
     await post.save();
     res.json(post.highfives);
+
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
     res.status(500).send("Server error");
@@ -172,32 +160,24 @@ router.put("/like/:post_id", [auth, activationCheck], async (req, res) => {
 // @route   PUT api/post/unlike/:post_id
 // @desc    Remove highfive from a post
 // @access  Private
-router.put(
-  "/unlike/:post_id",
-  [auth, activationCheck],
-  async (req, res) => {
+router.put("/unlike/:post_id", [auth, activationCheck], async (req, res) => {
     try {
-      const post = await Post.findById(req.params.id);
+      const post = await Post.findById(req.params.post_id);
 
       // check if post is not high fived
-      if (
-        post.highfives.filter(
-          (highfive) => highfive.user.toString() === req.user.id
-        ).length === 0
-      )
-        return res
-          .status(400)
-          .json({ msg: "Post has not yet been high fived" });
+      if (post.highfives.filter(highfive => highfive.user.toString() === req.user.id).length === 0)
+        return res.status(400).json({ msg: "Post has not yet been highfived" });
 
       // get remove index
       const removeIndex = post.highfives
-        .map((highfive) => highfive.user.toStrng())
+        .map(highfive => highfive.user.toString())
         .indexOf(req.user.id);
 
       post.highfives.splice(removeIndex, 1);
 
       await post.save();
       res.json(post.highfives);
+
     } catch (error) {
       console.log(`Error: ${error.message}`.red.bold);
       res.status(500).send("Server error");
@@ -208,28 +188,31 @@ router.put(
 // @route   PUT api/post/reply/:post_id
 // @desc    Reply a post
 // @access  Private
-router.put(
-  "/reply/:post_id",
-  [
-    auth,
-    activationCheck,
-    [check("text", "Text can not be empty").not().isEmpty()],
-  ],
-  async (req, res) => {
+router.put("/reply/:post_id", [auth, activationCheck, [
+    check("text", "Text can not be empty").not().isEmpty()
+  ]], async (req, res) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array });
 
     try {
       const post = await Post.findById(req.params.post_id);
 
-      post.receivers.map((receiver) => {
-        if (receiver.user.toString() === req.user.id)
-          receiver.text = req.body.text;
-      });
+      if(!post)
+        return res.status(404).json({ msg: 'Post not found' });
+
+      const newReply = {
+        user: req.user.id,
+        text: req.body.text,
+        name: req.user.name
+      }
+
+      post.replies.unshift(newReply);
 
       await post.save();
-      res.json(post.receivers);
+      res.json(post.replies);
+
     } catch (error) {
       console.log(`Error: ${error.message}`.red.bold);
       res.status(500).send("Server error");
@@ -238,31 +221,31 @@ router.put(
 );
 
 // @route   DELETE api/post/reply/:post_id/:reply_id
-// @desc    Reply a post
+// @desc    Delete a reply
 // @access  Private
-router.delete(
-  "/reply/:post_id/:reply_id",
-  [auth, activationCheck],
-  async (req, res) => {
+router.delete("/reply/:post_id/:reply_id", [auth, activationCheck], async (req, res) => {
     try {
       const post = await Post.findById(req.params.post_id);
-      const reply = post.receivers.find(
-        (receiver) => receiver.id === req.params.reply_id
-      );
 
-      if (!reply) return res.status(404).json({ msg: "Reply does not exist" });
+      if(!post)
+        return res.status(404).json({ msg: 'Post not found' });
+
+      const reply = post.replies.find(reply => reply.id === req.params.reply_id);
+
+      if (!reply)
+        return res.status(404).json({ msg: "Reply does not exist" });
 
       if (reply.user.toString() !== req.user.id)
         return res.status(401).json({ msg: "User not authorized" });
 
-      const removeIndex = post.receivers
-        .map((receiver) => receiver.user.toString())
+      const removeIndex = post.replies
+        .map(reply => reply.user.toString())
         .indexOf(req.user.id);
 
-      post.receivers.splice(removeIndex, 1);
+      post.replies.splice(removeIndex, 1);
       await post.save();
 
-      res.json(post.receivers);
+      res.json(post.replies);
     } catch (error) {
       console.log(`Error: ${error.message}`.red.bold);
       res.status(500).send("Server error");

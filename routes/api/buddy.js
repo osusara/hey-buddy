@@ -3,9 +3,9 @@ const router = express.Router();
 
 const auth = require('../../middleware/auth');
 const activationCheck = require('../../middleware/activationCheck');
-const activeCheck = require('../../utils/activeCheck');
-const privacyCheck = require('../../utils/privacyCheck');
-const buddyCheck = require('../../utils/buddyCheck');
+const activeCheck = require('../utils/activeCheck');
+const privacyCheck = require('../utils/privacyCheck');
+const buddyCheck = require('../utils/buddyCheck');
 const Buddy = require('../../models/Buddy');
 
 // @route   GET api/buddy/me

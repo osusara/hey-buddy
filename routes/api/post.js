@@ -5,8 +5,8 @@ const { ObjectId } = require("mongodb");
 
 const auth = require("../../middleware/auth");
 const activationCheck = require("../../middleware/activationCheck");
-const buddyCheck = require("../../utils/buddyCheck");
-const privacyCheck = require("../../utils/privacyCheck");
+const buddyCheck = require("../utils/buddyCheck");
+const privacyCheck = require("../utils/privacyCheck");
 const Profile = require("../../models/Profile");
 const Buddy = require("../../models/Buddy");
 const Post = require("../../models/Post");

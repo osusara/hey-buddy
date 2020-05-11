@@ -4,7 +4,7 @@ const { check, validationResult } = require("express-validator");
 
 const auth = require('../../middleware/auth');
 const activationCheck = require('../../middleware/activationCheck');
-const activeCheck = require('../../utils/activeCheck');
+const activeCheck = require('../utils/activeCheck');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 

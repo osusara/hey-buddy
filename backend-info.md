@@ -16,7 +16,6 @@
     -create/update profile [POST api/profile]
     -get all profiles [GET api/profile]
     -get profile by id [GET api/profile/user/:user_id]
-    -delete profile/user/posts permenantly [DELETE api/profile] - move to admin
 
 ### buddy [Buddy]
 
@@ -47,9 +46,8 @@
     -reply a post [PUT api/post/reply/:post_id]
     -delete a reply [DELETE api/post/reply/:post_id/:reply_id]
 
-=====================================================================================
 
-# admin
+# Admin
 
 ### _auth [Admin]
 
@@ -60,6 +58,10 @@
 
     -register admin [POST api/admin]
     -activate/deactivate [PUT api/admin]
+
+### _privilages [User, Profile, Post, Challenge]
+    
+    -delete profile/user/posts permenantly [DELETE api/user/:user_id]
 
 ### dare [Dare]
 

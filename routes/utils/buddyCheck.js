@@ -1,4 +1,4 @@
-const Buddy = require('../models/Buddy');
+const Buddy = require('../../models/Buddy');
 
 module.exports = async function (id, req, res) {
   try {

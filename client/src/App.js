@@ -1,12 +1,26 @@
-import React from 'react';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Container } from "react-bootstrap";
 
-function App() {
+import Header from "./components/layout/Header";
+import Login from "./components/pages/auth/Login";
+import Register from "./components/pages/auth/Register";
+import Footer from "./components/layout/Footer";
+import "./App.css";
+
+const App = () => {
   return (
-    <div className="App">
-      <h1>Hello, World!</h1>
-    </div>
+    <Router>
+      <Header />
+      <Container fluid={true}>
+        <Switch>
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/register" component={Register} />
+        </Switch>
+      </Container>
+      <Footer />
+    </Router>
   );
-}
+};
 
 export default App;

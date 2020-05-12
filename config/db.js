@@ -13,7 +13,7 @@ const connectDB = async () => {
     console.log(' Back-end is functioning. You are ready to go! '.bgGreen.black.bold);
 
   } catch (error) {
-    console.log(`Error: ${err.message}`.red.bold);
+    console.log(`Error: ${error.message}`.red.bold);
     process.exit(1);
   }
 };

@@ -12,7 +12,7 @@ const App = () => {
   return (
     <Router>
       <Header />
-      <Container fluid={true}>
+      <Container fluid={true} className="bg-light">
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />

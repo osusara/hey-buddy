@@ -10,8 +10,6 @@ const User = require("../../models/User");
 const Profile = require("../../models/Profile");
 dotenv.config({ path: "./config/config.env" });
 
-const uploader = require("../../config/storage");
-
 // @route   POST api/user
 // @desc    Register user
 // @access  Public

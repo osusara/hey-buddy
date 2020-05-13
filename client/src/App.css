@@ -10,3 +10,15 @@
 .card, .btn, .form-control {
   border: none !important;
 }
+
+.btn-border-none {
+  border: none !important;
+}
+
+.full-hight {
+  height: 75vh !important;
+}
+
+.hr-width {
+  width: 75%;
+}

@@ -7,11 +7,11 @@
   font-family: 'Noto Sans', sans-serif;
 }
 
-.card, .btn, .form-control {
-  border: none !important;
+a:hover {
+  text-decoration: none !important;
 }
 
-.btn-border-none {
+.card, .btn, .form-control {
   border: none !important;
 }
 

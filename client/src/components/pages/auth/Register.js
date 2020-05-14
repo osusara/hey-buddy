@@ -15,6 +15,16 @@ const Register = () => {
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    if (password !== verify) {
+      console.log("Password doesn't match");
+    } else {
+      console.log("Success");
+    }
+  };
+
   return (
     <Container fluid={true}>
       <Row className="full-hight">
@@ -22,10 +32,10 @@ const Register = () => {
           <Card className="bg-primary shadow-sm p-3">
             <Card.Body className="text-center">
               <Card.Title className="text-dark">
-                <h2>Create an Account</h2>
+                <h2>Become a Buddy</h2>
                 <hr className="hr-width mx-auto" />
               </Card.Title>
-              <Form>
+              <Form onSubmit={(e) => onSubmit(e)}>
                 <Form.Group>
                   <Form.Control
                     className="shadow-sm text-center text-dark"
@@ -55,7 +65,7 @@ const Register = () => {
                   <Form.Control
                     className="shadow-sm text-center"
                     placeholder="New Password"
-                    type="text"
+                    type="password"
                     name="password"
                     value={password}
                     onChange={(e) => onChange(e)}
@@ -66,7 +76,7 @@ const Register = () => {
                   <Form.Control
                     className="shadow-sm text-center"
                     placeholder="Confirm Password"
-                    type="text"
+                    type="password"
                     name="verify"
                     value={verify}
                     onChange={(e) => onChange(e)}
@@ -74,16 +84,15 @@ const Register = () => {
                   ></Form.Control>
                 </Form.Group>
                 <Form.Group>
-                  <Button
-                    variant="dark"
-                    type="submit"
-                    className="mx-1 shadow-sm"
-                  >
+                  <Button variant="dark" type="submit" className="shadow-sm">
                     Sign Up
                   </Button>
-                  <Link to="/" className="btn btn-secondary mx-1 shadow-sm">
-                    Go Back
-                  </Link>
+                  <p className="mt-2">
+                    Already a Buddy?{" "}
+                    <Link to="/login" className="text-dark">
+                      Login
+                    </Link>
+                  </p>
                 </Form.Group>
               </Form>
             </Card.Body>

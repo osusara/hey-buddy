@@ -9,17 +9,17 @@ const Header = () => {
       <Navbar.Collapse id="basic-navbar-nav">
         <Form className="ml-auto">
           <Row>
-            <Col md={8} xs={8} style={{ paddingRight: "0" }}>
+            <Col md={9} xs={9} style={{ paddingRight: "0" }}>
               <Form.Control type="text" placeholder="Search" />
             </Col>
-            <Col md={4} xs={4} style={{ paddingLeft: "5px" }} className="my-auto">
-              <Button variant="dark">Search</Button>
+            <Col md={3} xs={3} style={{ paddingLeft: "5px" }} className="my-auto">
+              <Button><i className="fas fa-search"></i></Button>
             </Col>
           </Row>
         </Form>
         <Nav className="ml-2">
-          <Nav.Link href="#home">Home</Nav.Link>
-          <Nav.Link href="#link">Link</Nav.Link>
+          <Nav.Link href="#home">Profile</Nav.Link>
+          <Nav.Link href="#link">Sign Out</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

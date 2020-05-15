@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Container } from "react-bootstrap";
 
@@ -9,6 +9,10 @@ import Login from "./components/pages/auth/Login";
 import Register from "./components/pages/auth/Register";
 import Footer from "./components/layout/Footer";
 
+// Actions
+import { loadUser } from "./actions/auth";
+import setAuthToken from "./utils/setAuthToken";
+
 // Redux
 import { Provider } from "react-redux";
 import store from "./store";
@@ -16,7 +20,15 @@ import store from "./store";
 // Styles
 import "./App.css";
 
+// Check if user logged in
+if (localStorage.token)
+  setAuthToken(localStorage.token);
+
 const App = () => {
+  useEffect(() => {
+    store.dispatch(loadUser());
+  }, []);
+
   return (
     <Provider store={store}>
       <Router>

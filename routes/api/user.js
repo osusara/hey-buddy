@@ -28,11 +28,11 @@ router.post('/', [
 
   try {
     // See if user is exist
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ $or: [{email}, {username}] });
 
     if(user) {
       return res.status(400).json({ errors: [{
-        msg: 'Email is already used by another user'
+        msg: 'Email or Username is already used by another user'
       }] });
     }
 
@@ -61,7 +61,7 @@ router.post('/', [
 
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
-    res.status(500).send('Server error')
+    res.status(500).send('Server error');
   }
 });
 

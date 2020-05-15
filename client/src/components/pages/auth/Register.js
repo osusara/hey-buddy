@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { setAlert } from "../../../actions/alert";
+import { register } from "../../../actions/auth";
 import PropTypes from 'prop-types'
 
-const Register = ({ setAlert }) => {
+const Register = ({ setAlert, register, isAuthenticated }) => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -24,9 +25,12 @@ const Register = ({ setAlert }) => {
     if (password !== verify) {
       setAlert("Password doesn't match", "danger");
     } else {
-      console.log("Success");
+      register({ username, email, password });
     }
   };
+
+  if(isAuthenticated)
+    return <Redirect to="/" />
 
   return (
     <Container fluid={true}>
@@ -73,6 +77,7 @@ const Register = ({ setAlert }) => {
                     value={password}
                     onChange={(e) => onChange(e)}
                     required
+                    minLength="6"
                   ></Form.Control>
                 </Form.Group>
                 <Form.Group>
@@ -84,6 +89,7 @@ const Register = ({ setAlert }) => {
                     value={verify}
                     onChange={(e) => onChange(e)}
                     required
+                    minLength="6"
                   ></Form.Control>
                 </Form.Group>
                 <Form.Group>
@@ -108,6 +114,12 @@ const Register = ({ setAlert }) => {
 
 Register.protoType = {
   setAlert: PropTypes.func.isRequired,
+  register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
 }
 
-export default connect(null, { setAlert })(Register);
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
+
+export default connect(mapStateToProps, { setAlert, register })(Register);

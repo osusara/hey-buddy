@@ -11,8 +11,9 @@ a:hover {
   text-decoration: none !important;
 }
 
-.card, .btn, .form-control {
+.card, .btn, .form-control, .toast {
   border: none !important;
+  border-radius: 0.5rem !important;
 }
 
 .full-hight {
@@ -21,4 +22,19 @@ a:hover {
 
 .hr-width {
   width: 75%;
+}
+
+.alert-danger {
+  background-color: #c62128 !important;
+  color: #ffffff !important;
+}
+
+.alert-warning {
+  background-color: #fbb034 !important;
+  color: #000000 !important;
+}
+
+.alert-success {
+  background-color: #3bb78f !important;
+  color: #ffffff !important;
 }

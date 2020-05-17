@@ -1,5 +1,6 @@
 import React from "react";
 import { Navbar, Nav, Form, Button, Row, Col } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { logout } from "../../actions/auth";
@@ -7,20 +8,20 @@ import { logout } from "../../actions/auth";
 const Header = ({ logout, auth: { isAuthenticated, loading } }) => {
   const authLinks = (
     <Nav className="ml-2">
-      <Nav.Link className="my-auto" href="/profile">Profile</Nav.Link>
-      <Nav.Link className="my-auto" href="/post">Posts</Nav.Link>
-      <Nav.Link href="/login" onClick={logout}>
+      <Link className="nav-link my-auto" to="/profile">Profile</Link>
+      <Link className=" nav-link my-auto" to="/post">Posts</Link>
+      <Link className="nav-link" to="/login" onClick={logout}>
         <Button variant="dark">
           <i className="text-primary fas fa-power-off"></i>
         </Button>
-      </Nav.Link>
+      </Link>
     </Nav>
   );
 
   const guestLinks = (
     <Nav className="ml-2">
-      <Nav.Link href="/login">Login</Nav.Link>
-      <Nav.Link href="/register">Sign Up</Nav.Link>
+      <Link className="nav-link" to="/login">Login</Link>
+      <Link className="nav-link" to="/register">Sign Up</Link>
     </Nav>
   );
 

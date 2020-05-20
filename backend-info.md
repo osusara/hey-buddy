@@ -38,6 +38,7 @@
 
     -create a post [POST api/post]
     -get buddies' posts [GET api/post]
+    -explore posts [GET api/post/explore] - Not created yet
     -get my posts [GET api/post/me]
     -get a post by id [GET api/post/:post_id]
     -delete a post [DELETE api/post/:post_id]

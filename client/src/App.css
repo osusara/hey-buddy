@@ -24,6 +24,10 @@ a:hover {
   width: 75%;
 }
 
+.brand-img {
+  width: 15rem;
+}
+
 .alert-danger {
   background-color: #c62128 !important;
   color: #ffffff !important;

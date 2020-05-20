@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { logout } from "../../actions/auth";
+import Brand from "../../assets/Brand.png";
 
 const Header = ({ logout, auth: { isAuthenticated, loading } }) => {
   const authLinks = (
@@ -27,7 +28,7 @@ const Header = ({ logout, auth: { isAuthenticated, loading } }) => {
 
   return (
     <Navbar bg="primary" expand="lg" variant="light" className="shadow-sm">
-      <Navbar.Brand href="/">Hey, Buddy!</Navbar.Brand>
+      <Navbar.Brand href="/"><img className="brand-img" alt="Hey, Buddy!" src={Brand} /></Navbar.Brand>
       <Navbar.Toggle className="btn" aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Form className="ml-auto">

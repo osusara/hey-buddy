@@ -133,15 +133,23 @@ router.get("/:post_id", [auth, activationCheck], async (req, res) => {
   }
 });
 
-// @route   GET api/post/explore
+// @route   GET api/post/explore/glob
 // @desc    Explore posts
 // @access  Private
-router.get("/explore", [auth, activationCheck], async (req, res) => {
+router.get("/explore/glob", async (req, res) => {
   try {
+    const profiles = await Profile.aggregate([
+      { $match: { privacy: false } },
+      { $sample: { size: 20 } },
+      { $project: { user: 1, _id: 0 } },
+    ]);
 
+    // Not working from here
+    const posts = await Post.aggregate([{ $match: { user: { $in: profiles } }},{ $sample: { size: 20 } }]);
 
-    res.json("OKay");
-
+    res.json({posts});
+    // To here
+    
   } catch (error) {
     console.log(`Error: ${error.message}`.red.bold);
     res.status(500).send("Server error");

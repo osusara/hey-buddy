@@ -42,6 +42,10 @@ const ProfileSchema = new mongoose.Schema({
       type: String,
     },
   },
+  score: {
+    type: Number,
+    required: true,
+  },
   privacy: {
     type: Boolean,
     default: true,

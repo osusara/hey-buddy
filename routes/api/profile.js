@@ -39,7 +39,7 @@ router.post('/', [auth, activationCheck, [
   const { name, image, bio, status, relationship, address, interests, facebook, twitter, instagram, youtube, privacy } = req.body;
 
   // build profile object
-  const profileFields = {}
+  const profileFields = { score: 0 }
   profileFields.user = req.user.id;
   if (name) profileFields.name = name;
   if (image) profileFields.image = image;
@@ -62,6 +62,8 @@ router.post('/', [auth, activationCheck, [
     let profile = await Profile.findOne({ user: req.user.id });
 
     if(profile) {
+      profileFields.score = profile.score;
+      
       // update profile
       profile = await Profile.findOneAndUpdate(
         { user: req.user.id },

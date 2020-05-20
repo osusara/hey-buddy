@@ -23,9 +23,8 @@ router.post("/", [_auth, _activationCheck, [
   const newDare = new Dare({
     title: req.body.title,
     text: req.body.text,
-    type: req.body.type,
     level: req.body.level,
-    tags: req.body.tags.toString().split(',').map(skill => skill.trim()),
+    tags: req.body.tags.toString().split(',').map(tag => tag.trim()),
     author: req.admin.id,
   });
 

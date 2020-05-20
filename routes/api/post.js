@@ -7,6 +7,7 @@ const auth = require("../../middleware/auth");
 const activationCheck = require("../../middleware/activationCheck");
 const buddyCheck = require("../utils/buddyCheck");
 const privacyCheck = require("../utils/privacyCheck");
+const addScore = require("../utils/addScore");
 const Profile = require("../../models/Profile");
 const Buddy = require("../../models/Buddy");
 const Post = require("../../models/Post");
@@ -16,7 +17,10 @@ const Dare = require("../../models/Dare");
 // @desc    Create a post
 // @access  Private
 router.post("/", [auth, activationCheck, [
-  check('text', 'Text can not be empty').not().isEmpty()
+  check('title', 'Title can not be empty').not().isEmpty(),
+  check('text', 'Post text can not be empty').not().isEmpty(),
+  check('level', 'Level can not be empty').not().isEmpty(),
+  check('tags', 'Must include atleast one tag empty').not().isEmpty()
 ]], async (req, res) => {
   const errors = validationResult(req);
 
@@ -25,11 +29,33 @@ router.post("/", [auth, activationCheck, [
 
   try {
 
+    const { title, text, level, tags, create } = req.body;
+
+    
     const newPost = new Post({
       user: req.user.id,
-      text: req.body.text,
-      name: req.user.name
+      name: req.user.name,
+      title,
+      text,
+      level,
+      tags: tags.split(",").map((tag) => tag.trim()),
     });
+    
+    if (create) {
+      const newDare = new Dare({
+        title,
+        text,
+        level,
+        type: "user",
+        tags: req.body.tags.toString().split(',').map(tag => tag.trim()),
+        author: req.user.id,
+      });
+
+      await newDare.save();
+    }
+
+
+    await addScore(req.user.id, 5, req, res);
 
     const post = await newPost.save();
     res.json(post);
@@ -107,6 +133,21 @@ router.get("/:post_id", [auth, activationCheck], async (req, res) => {
   }
 });
 
+// @route   GET api/post/explore
+// @desc    Explore posts
+// @access  Private
+router.get("/explore", [auth, activationCheck], async (req, res) => {
+  try {
+
+
+    res.json("OKay");
+
+  } catch (error) {
+    console.log(`Error: ${error.message}`.red.bold);
+    res.status(500).send("Server error");
+  }
+});
+
 // @route   DELETE api/post/:post_id
 // @desc    Delete a post
 // @access  Private
@@ -118,6 +159,8 @@ router.delete("/:post_id", [auth, activationCheck], async (req, res) => {
 
     if (post.user.toString() !== req.user.id)
       return res.status(401).json({ msg: "User not authorized" });
+
+    await addScore(req.user.id, -5, req, res);
 
     await post.remove();
     res.json({ msg: "Post removed" });
@@ -139,6 +182,9 @@ router.put("/like/:post_id", [auth, activationCheck], async (req, res) => {
   try {
     const post = await Post.findById(req.params.post_id);
 
+    if (!post)
+      return res.status(404).send("Post not found");
+
     // check if already high fived
     if (post.highfives.filter(highfive => highfive.user.toString() === req.user.id).length > 0)
       return res.status(400).json({ msg: "Post has already been high fived" });
@@ -147,6 +193,8 @@ router.put("/like/:post_id", [auth, activationCheck], async (req, res) => {
       user: req.user.id,
       name: req.user.name,
     });
+
+    await addScore(req.user.id, 1, req, res);
 
     await post.save();
     res.json(post.highfives);
@@ -164,6 +212,9 @@ router.put("/unlike/:post_id", [auth, activationCheck], async (req, res) => {
     try {
       const post = await Post.findById(req.params.post_id);
 
+      if (!post)
+        return res.status(404).send("Post not found");
+
       // check if post is not high fived
       if (post.highfives.filter(highfive => highfive.user.toString() === req.user.id).length === 0)
         return res.status(400).json({ msg: "Post has not yet been highfived" });
@@ -174,6 +225,8 @@ router.put("/unlike/:post_id", [auth, activationCheck], async (req, res) => {
         .indexOf(req.user.id);
 
       post.highfives.splice(removeIndex, 1);
+
+      await addScore(req.user.id, -1, req, res);
 
       await post.save();
       res.json(post.highfives);
@@ -201,6 +254,9 @@ router.put("/reply/:post_id", [auth, activationCheck, [
 
       if(!post)
         return res.status(404).json({ msg: 'Post not found' });
+
+      if(post.close)
+        return res.status(200).json({ msg: "Post has been closed" });
 
       const newReply = {
         user: req.user.id,
@@ -252,5 +308,64 @@ router.delete("/reply/:post_id/:reply_id", [auth, activationCheck], async (req, 
     }
   }
 );
+
+// @route   PUT api/post/reply/:post_id/:reply_id
+// @desc    Mark reply as done
+// @access  Private
+router.put("/reply/:post_id/:reply_id", [auth, activationCheck], async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.post_id);
+
+      if(!post)
+        return res.status(404).json({ msg: 'Post not found' });
+        
+      if (post.user.toString() !== req.user.id)
+         return res.status(401).json({ msg: "User not authorized" });
+
+      const reply = post.replies.find(reply => reply.id === req.params.reply_id);
+
+      if (!reply)
+        return res.status(404).json({ msg: "Reply does not exist" });
+
+      if (reply.done)
+        return res.status(400).json({ msg: 'Reply already marked as done' });
+
+      reply.done = true;
+
+      await addScore(reply.user, 10, req, res);
+
+      await post.save();
+      res.json(post.replies);
+
+    } catch (error) {
+      console.log(`Error: ${error.message}`.red.bold);
+      res.status(500).send("Server error");
+    }
+  }
+);
+
+// @route   PUT api/post/:post_id
+// @desc    Close/reopen a post
+// @access  Private
+router.put("/:post_id", [auth, activationCheck], async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.post_id);
+
+    if (!post)
+      return res.status(404).send("Post not found");
+
+    if (post.user.toString() !== req.user.id)
+      return res.status(401).json({ msg: "User not authorized" });
+
+    post.close = !post.close;
+
+    await post.save();
+    res.json(post);
+
+  } catch (error) {
+    console.log(`Error: ${error.message}`.red.bold);
+    res.status(500).send("Server error");
+  }
+});
 
 module.exports = router;

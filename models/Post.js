@@ -9,9 +9,21 @@ const PostSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  title: {
+    type: String,
+    required: true,
+  },
   text: {
     type: String,
     required: true,
+  },
+  level: {
+    type: Number,
+    required: true,
+  },
+  tags: {
+    type: [String],
+    require: true,
   },
   replies: [
     {
@@ -31,6 +43,10 @@ const PostSchema = new mongoose.Schema({
         type: Date,
         default: Date.now(),
       },
+      done: {
+        type: Boolean,
+        default: false
+      }
     },
   ],
   highfives: [

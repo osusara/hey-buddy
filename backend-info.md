@@ -37,7 +37,7 @@
 ### post [Post] - didn't complete
 
     -create a post [POST api/post]
-    -get buddies' [GET api/post]
+    -get buddies' posts [GET api/post]
     -get my posts [GET api/post/me]
     -get a post by id [GET api/post/:post_id]
     -delete a post [DELETE api/post/:post_id]
@@ -45,6 +45,8 @@
     -remove highfive [PUT api/post/unlike/:post_id]
     -reply a post [PUT api/post/reply/:post_id]
     -delete a reply [DELETE api/post/reply/:post_id/:reply_id]
+    -mark a reply as done [PUT api/post/reply/:post_id/:reply_id]
+    -close/reopen a post [PUT api/post/:post_id]
 
 
 # Admin

@@ -40,7 +40,6 @@ router.post('/', [
       username,
       email,
       password,
-      score: 0,
     });
 
     // Encrypt password

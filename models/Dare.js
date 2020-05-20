@@ -10,13 +10,13 @@ const DareSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  type: {
-    type: String,
-    required: true,
-  },
   level: {
     type: Number,
     required: true,
+  },
+  type: {
+    type: String,
+    default: "admin"
   },
   tags: {
     type: [String],

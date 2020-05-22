@@ -37,6 +37,7 @@ const App = () => {
         <Header />
         <Container fluid={true} className="bg-light">
           <Notification />
+          <Route exact path="/" component={Home} />
           <Switch>
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />

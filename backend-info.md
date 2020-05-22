@@ -34,11 +34,11 @@
     -open/close challenge [PUT api/challenge/:challenge_id]
     -delete challenge [DELETE api/challenge/:challenge_id]
 
-### post [Post] - didn't complete
+### post [Post]
 
     -create a post [POST api/post]
     -get buddies' posts [GET api/post]
-    -explore posts [GET api/post/explore] - Not created yet
+    -explore posts [GET api/post/explore/global]
     -get my posts [GET api/post/me]
     -get a post by id [GET api/post/:post_id]
     -delete a post [DELETE api/post/:post_id]

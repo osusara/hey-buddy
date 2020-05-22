@@ -136,7 +136,7 @@ router.get("/:post_id", [auth, activationCheck], async (req, res) => {
 // @route   GET api/post/explore/glob
 // @desc    Explore posts
 // @access  Private
-router.get("/explore/glob", async (req, res) => {
+router.get("/explore/global", async (req, res) => {
   try {
     const profiles = await Profile.aggregate([
       { $match: { privacy: false } },
@@ -145,7 +145,9 @@ router.get("/explore/glob", async (req, res) => {
     ]);
 
     // Not working from here
-    const posts = await Post.aggregate([{ $match: { user: { $in: profiles } }},{ $sample: { size: 20 } }]);
+    const posts = await Post.aggregate([
+      { $match: { user: { $in: profiles.map(profile => {return profile.user}) } }},
+      { $sample: { size: 20 } }]);
 
     res.json({posts});
     // To here

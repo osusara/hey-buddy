@@ -9,8 +9,9 @@ import Brand from "../../assets/Brand.png";
 const Header = ({ logout, auth: { isAuthenticated, loading } }) => {
   const authLinks = (
     <Nav className="ml-2">
-      <Link className="nav-link my-auto" to="/profile">Profile</Link>
+      <Link className=" nav-link my-auto" to="/home">Home</Link>
       <Link className=" nav-link my-auto" to="/post">Posts</Link>
+      <Link className="nav-link my-auto" to="/profile">Profile</Link>
       <Link className="nav-link" to="/login" onClick={logout}>
         <Button variant="dark">
           <i className="text-primary fas fa-power-off"></i>

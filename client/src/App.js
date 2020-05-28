@@ -11,6 +11,7 @@ import Footer from "./components/layout/Footer";
 import Home from "./components/pages/home/Home";
 import Profile from "./components/pages/profile/Profile";
 import CreateProfile from "./components/pages/profile/CreateProfile";
+import EditProfile from "./components/pages/profile/EditProfile";
 import PrivateRoute from "./components/routing/PrivateRoute";
 
 // Actions
@@ -46,6 +47,7 @@ const App = () => {
             <PrivateRoute exact path="/home" component={Home} />
             <PrivateRoute exact path="/profile" component={Profile} />
             <PrivateRoute exact path="/create-profile" component={CreateProfile} />
+            <PrivateRoute exact path="/edit-profile" component={EditProfile} />
           </Switch>
         </Container>
         <Footer />

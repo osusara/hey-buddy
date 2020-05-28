@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getCurrentProfile } from "../../../actions/profile";
 import Spinner from "../../layout/Spinner";
+import ProfileActions from "./ProfileActions";
 
 const Profile = ({
   getCurrentProfile,
@@ -17,26 +19,32 @@ const Profile = ({
   return loading && profile === null ? (
     <Spinner />
   ) : (
-    <>
-      <h1>Profile</h1>
-      <p>
-        <i className="fas fa-user"></i> Welcome {user && user.username}
-      </p>
-      {profile !== null ? (
-        <>Has</>
-      ) : (
-        <>
-          <p>You have not yet setup a profile, buddy!</p>
-          <Link
-            to="/create-profile"
-            newProfile={true}
-            className="btn btn-primary my-1"
-          >
-            Create Profile
-          </Link>
-        </>
-      )}
-    </>
+    <Container>
+      <Card className="my-4" bg="primary">
+        <Card.Body>
+          <Card.Title className="text-center text-dark">
+            <h1> Hey! {user && user.username} </h1>
+          </Card.Title>
+          <Card.Text>
+            {profile !== null ? (
+              <>
+                <ProfileActions />
+              </>
+            ) : (
+              <>
+                <p>
+                  You have not yet setup your profile, buddy! Create your
+                  profile now to earn 10BPs 😉
+                </p>
+                <Link to="/create-profile" className="btn btn-dark my-1">
+                  Create Profile
+                </Link>
+              </>
+            )}
+          </Card.Text>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

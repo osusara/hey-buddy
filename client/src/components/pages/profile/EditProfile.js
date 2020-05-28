@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { createProfile } from "../../../actions/profile";
+import { createProfile, getCurrentProfile } from "../../../actions/profile";
 
-const CreateProfile = ({ createProfile, history }) => {
+const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentProfile, history }) => {
+
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
@@ -17,7 +18,6 @@ const CreateProfile = ({ createProfile, history }) => {
     twitter: "",
     instagram: "",
     youtube: "",
-    score: 0,
     privacy: false,
   });
 
@@ -34,18 +34,34 @@ const CreateProfile = ({ createProfile, history }) => {
     twitter,
     instagram,
     youtube,
-    score,
     privacy,
   } = formData;
 
-  const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+  useEffect(() => {
+    getCurrentProfile();
 
-  const onSubmit = e => {
+    setFormData({
+      name: loading || !profile.name ? "" : profile.name,
+      bio: loading || !profile.bio ? "" : profile.bio,
+      gender: loading || !profile.gender ? "0" : profile.gender,
+      relationship: loading || !profile.relationship ? "0" : profile.relationship,
+      address: loading || !profile.address ? "" : profile.address,
+      interests: loading || !profile.interests ? [] : profile.interests.join(', '),
+      facebook: loading || !profile.social.facebook ? "" : profile.social.facebook,
+      twitter: loading || !profile.social.twitter ? "" : profile.social.twitter,
+      instagram: loading || !profile.social.instagram ? "" : profile.social.instagram,
+      youtube: loading || !profile.social.youtube ? "" : profile.social.youtube,
+      privacy: loading ? "" : profile.privacy,
+    });
+  }, [getCurrentProfile]);
+
+  const onChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const onSubmit = (e) => {
     e.preventDefault();
-    setFormData({ ...formData, score: score + 10 });
-
-    createProfile(formData, history);
-  }
+    createProfile(formData, history, true);
+  };
 
   return (
     <Container>
@@ -54,13 +70,14 @@ const CreateProfile = ({ createProfile, history }) => {
           <Card bg="primary" className="my-4">
             <Card.Body className="m-4 px-4">
               <Card.Title className="text-center">
-                <h1 className="large text-dark">Create Your Profile</h1>
+                <h1 className="large text-dark">Update Your Profile</h1>
                 <p>Let your buddies know who you are</p>
               </Card.Title>
 
               <Form onSubmit={(e) => onSubmit(e)}>
                 <Form.Group>
                   <Form.Control
+                    className="shadow-sm"
                     type="text"
                     placeholder="Full Name"
                     name="name"
@@ -71,6 +88,7 @@ const CreateProfile = ({ createProfile, history }) => {
 
                 <Form.Group>
                   <Form.Control
+                    className="shadow-sm"
                     placeholder="About You"
                     as="textarea"
                     name="bio"
@@ -81,6 +99,7 @@ const CreateProfile = ({ createProfile, history }) => {
 
                 <Form.Group>
                   <Form.Control
+                    className="shadow-sm"
                     as="select"
                     name="gender"
                     value={gender}
@@ -97,6 +116,7 @@ const CreateProfile = ({ createProfile, history }) => {
 
                 <Form.Group>
                   <Form.Control
+                    className="shadow-sm"
                     as="select"
                     name="relationship"
                     value={relationship}
@@ -120,6 +140,7 @@ const CreateProfile = ({ createProfile, history }) => {
 
                 <Form.Group>
                   <Form.Control
+                    className="shadow-sm"
                     type="text"
                     placeholder="From Where?"
                     name="address"
@@ -130,6 +151,7 @@ const CreateProfile = ({ createProfile, history }) => {
 
                 <Form.Group>
                   <Form.Control
+                    className="shadow-sm"
                     type="text"
                     placeholder="Interests or Hobbies?"
                     name="interests"
@@ -143,7 +165,7 @@ const CreateProfile = ({ createProfile, history }) => {
                   <Button
                     onClick={() => toggleSocialInputs(!displaySocialInputs)}
                     type="button"
-                    className="btn-info"
+                    className="btn-info shadow-sm"
                   >
                     Add Your Social Links <i className={`fas fa-caret-${displaySocialInputs ? "up" : "down"}`}></i>
                   </Button>
@@ -153,10 +175,11 @@ const CreateProfile = ({ createProfile, history }) => {
                   <>
                     <Form.Group as={Row} className="social-input">
                       <Form.Label column sm={1} xs={2} className="text-center">
-                        <i className="fab fa-facebook fa-2x"></i>
+                        <i className="fab fa-facebook fa-2x text-center"></i>
                       </Form.Label>
                       <Col sm={11} xs={10}>
                         <Form.Control
+                          className="shadow-sm"
                           type="text"
                           placeholder="Facebook URL"
                           name="facebook"
@@ -168,10 +191,11 @@ const CreateProfile = ({ createProfile, history }) => {
 
                     <Form.Group as={Row} className="social-input">
                       <Form.Label column sm={1} xs={2} className="text-center">
-                        <i className="fab fa-twitter fa-2x"></i>
+                        <i className="fab fa-twitter fa-2x text-center"></i>
                       </Form.Label>
                       <Col sm={11} xs={10}>
                         <Form.Control
+                          className="shadow-sm"
                           type="text"
                           placeholder="Twitter URL"
                           name="twitter"
@@ -183,10 +207,11 @@ const CreateProfile = ({ createProfile, history }) => {
 
                     <Form.Group as={Row} className="social-input">
                       <Form.Label column sm={1} xs={2} className="text-center">
-                        <i className="fab fa-instagram fa-2x"></i>
+                        <i className="fab fa-instagram fa-2x text-center"></i>
                       </Form.Label>
                       <Col sm={11} xs={10}>
                         <Form.Control
+                          className="shadow-sm"
                           type="text"
                           placeholder="Instagram URL"
                           name="instagram"
@@ -198,10 +223,11 @@ const CreateProfile = ({ createProfile, history }) => {
 
                     <Form.Group as={Row} className="social-input">
                       <Form.Label column sm={1} xs={2} className="text-center">
-                        <i className="fab fa-youtube fa-2x"></i>
+                        <i className="fab fa-youtube fa-2x text-center"></i>
                       </Form.Label>
                       <Col sm={11} xs={10}>
                         <Form.Control
+                          className="shadow-sm"
                           type="text"
                           placeholder="YouTube URL"
                           name="youtube"
@@ -224,10 +250,13 @@ const CreateProfile = ({ createProfile, history }) => {
                 />
 
                 <Form.Group className="mt-3">
-                  <Button type="submit" className="btn-dark mr-1">
+                  <Button type="submit" className="btn-dark mr-1 shadow-sm">
                     Save
                   </Button>
-                  <Link className="btn btn-secondary ml-1" to="/profile">
+                  <Link
+                    className="btn btn-secondary ml-1 shadow-sm"
+                    to="/profile"
+                  >
                     Cancel
                   </Link>
                 </Form.Group>
@@ -240,8 +269,14 @@ const CreateProfile = ({ createProfile, history }) => {
   );
 };
 
-CreateProfile.propTypes = {
+EditProfile.propTypes = {
   createProfile: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
+  profile: PropTypes.object.isRequired,
 };
 
-export default connect(null, { createProfile })(withRouter(CreateProfile));
+const mapStateToProps = state => ({
+  profile: state.profile
+})
+
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(withRouter(EditProfile));

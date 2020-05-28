@@ -7,8 +7,19 @@
   font-family: 'Noto Sans', sans-serif;
 }
 
+body {
+  background-color: #f7f7f7;
+}
+
 a:hover {
   text-decoration: none !important;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
 }
 
 .card, .btn, .form-control, .toast {

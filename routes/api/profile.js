@@ -36,7 +36,7 @@ router.post('/', [auth, activationCheck, [
   if (!errors.isEmpty())
     return res.status(400).json({ errors: errors.array() });
 
-  const { name, image, bio, status, relationship, address, interests, facebook, twitter, instagram, youtube, privacy } = req.body;
+  const { name, image, bio, gender, relationship, address, interests, facebook, twitter, instagram, youtube, privacy } = req.body;
 
   // build profile object
   const profileFields = { score: 0 }
@@ -44,7 +44,7 @@ router.post('/', [auth, activationCheck, [
   if (name) profileFields.name = name;
   if (image) profileFields.image = image;
   if (bio) profileFields.bio = bio;
-  if (status) profileFields.status = status;
+  if (gender) profileFields.gender = gender;
   if (relationship) profileFields.relationship = relationship;
   if (address) profileFields.address = address;
   if (privacy) profileFields.privacy = privacy;

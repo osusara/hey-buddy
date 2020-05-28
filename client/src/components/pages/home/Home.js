@@ -1,44 +1,27 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { getCurrentProfile } from "../../../actions/profile";
 import Spinner from "../../layout/Spinner";
 
-const Home = ({
-  getCurrentProfile,
-  auth: { user },
-  profile: { profile, loading },
-}) => {
-  useEffect(() => {
-    getCurrentProfile();
-  }, [getCurrentProfile]);
+const Home = ({ isAuthenticated }) => {
+  if (!isAuthenticated) {
+    return <Redirect to="/login" />
+  }
 
-  return loading && profile === null ? (
-    <Spinner />
-  ) : (
+  return (
     <>
       <h1>Home</h1>
-      <p>
-        <i className="fas fa-user">Welcome {user && user.username}</i>
-      </p>
-      { profile !== null ? <>
-        Has
-      </> : <>
-        Has not
-      </>}
     </>
   );
 };
 
 Home.propTypes = {
-  getCurrentProfile: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired,
+  isAuthenticated: PropTypes.bool,
 };
 
 const mapStateToProps = (state) => ({
-  auth: state.auth,
-  profile: state.profile,
+  isAuthenticated: state.auth.isAuthenticated,
 });
 
-export default connect(mapStateToProps, { getCurrentProfile })(Home);
+export default connect(mapStateToProps, {})(Home);

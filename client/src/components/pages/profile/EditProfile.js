@@ -47,10 +47,10 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
       relationship: loading || !profile.relationship ? "0" : profile.relationship,
       address: loading || !profile.address ? "" : profile.address,
       interests: loading || !profile.interests ? [] : profile.interests.join(', '),
-      facebook: loading || !profile.social.facebook ? "" : profile.social.facebook,
-      twitter: loading || !profile.social.twitter ? "" : profile.social.twitter,
-      instagram: loading || !profile.social.instagram ? "" : profile.social.instagram,
-      youtube: loading || !profile.social.youtube ? "" : profile.social.youtube,
+      facebook: loading || !profile.social || !profile.social.facebook ? "" : profile.social.facebook,
+      twitter: loading || !profile.social || !profile.social.twitter ? "" : profile.social.twitter,
+      instagram: loading || !profile.social || !profile.social.instagram ? "" : profile.social.instagram,
+      youtube: loading || !profile.social || !profile.social.youtube ? "" : profile.social.youtube,
       privacy: loading ? "" : profile.privacy,
     });
   }, [getCurrentProfile]);
@@ -181,7 +181,7 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
                         <Form.Control
                           className="shadow-sm"
                           type="text"
-                          placeholder="Facebook URL"
+                          placeholder="Facebook Username"
                           name="facebook"
                           value={facebook}
                           onChange={(e) => onChange(e)}
@@ -197,7 +197,7 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
                         <Form.Control
                           className="shadow-sm"
                           type="text"
-                          placeholder="Twitter URL"
+                          placeholder="Twitter Username"
                           name="twitter"
                           value={twitter}
                           onChange={(e) => onChange(e)}
@@ -213,7 +213,7 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
                         <Form.Control
                           className="shadow-sm"
                           type="text"
-                          placeholder="Instagram URL"
+                          placeholder="Instagram Username"
                           name="instagram"
                           value={instagram}
                           onChange={(e) => onChange(e)}
@@ -229,7 +229,7 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
                         <Form.Control
                           className="shadow-sm"
                           type="text"
-                          placeholder="YouTube URL"
+                          placeholder="YouTube Username"
                           name="youtube"
                           value={youtube}
                           onChange={(e) => onChange(e)}

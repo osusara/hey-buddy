@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { createProfile } from "../../../actions/profile";
 
 const CreateProfile = ({ createProfile, history }) => {
+
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
@@ -158,7 +159,7 @@ const CreateProfile = ({ createProfile, history }) => {
                       <Col sm={11} xs={10}>
                         <Form.Control
                           type="text"
-                          placeholder="Facebook URL"
+                          placeholder="Facebook Username"
                           name="facebook"
                           value={facebook}
                           onChange={(e) => onChange(e)}
@@ -173,7 +174,7 @@ const CreateProfile = ({ createProfile, history }) => {
                       <Col sm={11} xs={10}>
                         <Form.Control
                           type="text"
-                          placeholder="Twitter URL"
+                          placeholder="Twitter Username"
                           name="twitter"
                           value={twitter}
                           onChange={(e) => onChange(e)}
@@ -188,7 +189,7 @@ const CreateProfile = ({ createProfile, history }) => {
                       <Col sm={11} xs={10}>
                         <Form.Control
                           type="text"
-                          placeholder="Instagram URL"
+                          placeholder="Instagram Username"
                           name="instagram"
                           value={instagram}
                           onChange={(e) => onChange(e)}
@@ -203,7 +204,7 @@ const CreateProfile = ({ createProfile, history }) => {
                       <Col sm={11} xs={10}>
                         <Form.Control
                           type="text"
-                          placeholder="YouTube URL"
+                          placeholder="YouTube Username"
                           name="youtube"
                           value={youtube}
                           onChange={(e) => onChange(e)}

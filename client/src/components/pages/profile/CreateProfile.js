@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
-import { Link, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { createProfile } from "../../../actions/profile";
@@ -10,15 +10,15 @@ const CreateProfile = ({ createProfile, history }) => {
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
-    gender: "0",
-    relationship: "0",
+    gender: "Not set",
+    relationship: "Not set",
     address: "",
-    interests: [],
+    interests: null,
     facebook: "",
     twitter: "",
     instagram: "",
     youtube: "",
-    score: 0,
+    score: 10,
     privacy: false,
   });
 
@@ -35,7 +35,6 @@ const CreateProfile = ({ createProfile, history }) => {
     twitter,
     instagram,
     youtube,
-    score,
     privacy,
   } = formData;
 
@@ -43,8 +42,6 @@ const CreateProfile = ({ createProfile, history }) => {
 
   const onSubmit = e => {
     e.preventDefault();
-    setFormData({ ...formData, score: score + 10 });
-
     createProfile(formData, history);
   }
 
@@ -87,7 +84,7 @@ const CreateProfile = ({ createProfile, history }) => {
                     value={gender}
                     onChange={(e) => onChange(e)}
                   >
-                    <option value="0" hidden>
+                    <option value="Not set" hidden>
                       Your gender
                     </option>
                     <option value="Male">Male 👦</option>
@@ -103,7 +100,7 @@ const CreateProfile = ({ createProfile, history }) => {
                     value={relationship}
                     onChange={(e) => onChange(e)}
                   >
-                    <option value="0" hidden>
+                    <option value="Not set" hidden>
                       Relationship Status
                     </option>
                     <option value="Still Single">Still single 😉</option>
@@ -146,7 +143,12 @@ const CreateProfile = ({ createProfile, history }) => {
                     type="button"
                     className="btn-info"
                   >
-                    Add Your Social Links <i className={`fas fa-caret-${displaySocialInputs ? "up" : "down"}`}></i>
+                    Add Your Social Links{" "}
+                    <i
+                      className={`fas fa-caret-${
+                        displaySocialInputs ? "up" : "down"
+                      }`}
+                    ></i>
                   </Button>
                 </Form.Group>
 
@@ -219,18 +221,13 @@ const CreateProfile = ({ createProfile, history }) => {
                   type="checkbox"
                   name="privacy"
                   checked={privacy}
-                  onChange={(e) =>
-                    setFormData({ ...formData, privacy: e.target.checked })
-                  }
+                  onChange={e => setFormData({ ...formData, [e.target.name]: e.target.checked })}
                 />
 
                 <Form.Group className="mt-3">
                   <Button type="submit" className="btn-dark mr-1">
                     Save
                   </Button>
-                  <Link className="btn btn-secondary ml-1" to="/profile">
-                    Cancel
-                  </Link>
                 </Form.Group>
               </Form>
             </Card.Body>

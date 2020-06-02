@@ -10,14 +10,15 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
-    gender: "0",
-    relationship: "0",
+    gender: "Not set",
+    relationship: "Not set",
     address: "",
-    interests: [],
+    interests: null,
     facebook: "",
     twitter: "",
     instagram: "",
     youtube: "",
+    score: 0,
     privacy: false,
   });
 
@@ -43,10 +44,11 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
     setFormData({
       name: loading || !profile.name ? "" : profile.name,
       bio: loading || !profile.bio ? "" : profile.bio,
-      gender: loading || !profile.gender ? "0" : profile.gender,
-      relationship: loading || !profile.relationship ? "0" : profile.relationship,
+      gender: loading || !profile.gender ? "Not Set" : profile.gender,
+      relationship: loading || !profile.relationship ? "Not Set" : profile.relationship,
       address: loading || !profile.address ? "" : profile.address,
       interests: loading || !profile.interests ? [] : profile.interests.join(', '),
+      score: loading || !profile.score ? 0 : profile.score,
       facebook: loading || !profile.social || !profile.social.facebook ? "" : profile.social.facebook,
       twitter: loading || !profile.social || !profile.social.twitter ? "" : profile.social.twitter,
       instagram: loading || !profile.social || !profile.social.instagram ? "" : profile.social.instagram,
@@ -105,9 +107,7 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
                     value={gender}
                     onChange={(e) => onChange(e)}
                   >
-                    <option value="0" hidden>
-                      Your gender
-                    </option>
+                    <option value="Not set" hidden>Your gender</option>
                     <option value="Male">Male 👦</option>
                     <option value="Female">Female 👧</option>
                     <option value="Other">Other 😺</option>
@@ -122,18 +122,12 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
                     value={relationship}
                     onChange={(e) => onChange(e)}
                   >
-                    <option value="0" hidden>
-                      Relationship Status
-                    </option>
+                    <option value="Not set" hidden>Relationship Status</option>
                     <option value="Still Single">Still single 😉</option>
-                    <option value="In a relationship">
-                      In a relationship 😍
-                    </option>
+                    <option value="In a relationship">In a relationship 😍</option>
                     <option value="Engaged">Engaged 🥰</option>
                     <option value="Married">Married 😚</option>
-                    <option value="It's Complicated">
-                      It's Complicated 🤔
-                    </option>
+                    <option value="It's Complicated">It's Complicated 🤔</option>
                     <option value="Single forever">Single forever 😎</option>
                   </Form.Control>
                 </Form.Group>
@@ -167,7 +161,12 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
                     type="button"
                     className="btn-info shadow-sm"
                   >
-                    Add Your Social Links <i className={`fas fa-caret-${displaySocialInputs ? "up" : "down"}`}></i>
+                    Add Your Social Links{" "}
+                    <i
+                      className={`fas fa-caret-${
+                        displaySocialInputs ? "up" : "down"
+                      }`}
+                    ></i>
                   </Button>
                 </Form.Group>
 
@@ -244,9 +243,7 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
                   type="checkbox"
                   name="privacy"
                   checked={privacy}
-                  onChange={(e) =>
-                    setFormData({ ...formData, privacy: e.target.checked })
-                  }
+                  onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.checked })}
                 />
 
                 <Form.Group className="mt-3">

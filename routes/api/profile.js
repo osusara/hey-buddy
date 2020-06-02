@@ -29,17 +29,11 @@ router.get("/me", auth, async (req, res) => {
 // @route   POST api/profile
 // @desc    Create or update profile
 // @access  Private
-router.post('/', [auth, activationCheck, [
-  check('name', "Name can't be empty").not().isEmpty()
-]], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty())
-    return res.status(400).json({ errors: errors.array() });
-
-  const { name, image, bio, gender, relationship, address, interests, facebook, twitter, instagram, youtube, privacy } = req.body;
+router.post('/', [auth, activationCheck], async (req, res) => {
+  const { name, image, bio, gender, relationship, address, interests, score, facebook, twitter, instagram, youtube, privacy } = req.body;
 
   // build profile object
-  const profileFields = { score: 0 }
+  const profileFields = {}
   profileFields.user = req.user.id;
   if (name) profileFields.name = name;
   if (image) profileFields.image = image;
@@ -48,8 +42,8 @@ router.post('/', [auth, activationCheck, [
   if (relationship) profileFields.relationship = relationship;
   if (address) profileFields.address = address;
   if (privacy) profileFields.privacy = privacy;
-  if (interests) 
-    profileFields.interests = interests.split(',').map(interest => interest.trim());
+  if (interests) profileFields.interests = interests.split(',').map(interest => interest.trim());
+  if (score) profileFields.score = score;
   
   // build social object
   profileFields.social = {}

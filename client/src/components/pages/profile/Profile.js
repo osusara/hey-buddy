@@ -90,59 +90,71 @@ const Profile = ({
                           {profile.social ? (
                             <>
                               {profile.social.facebook ? (
-                              <p>
-                                <a
-                                  className="text-secondary"
-                                  href={`https://facebook.com/${profile.social.facebook}`}
-                                  target="_blank"
-                                >
-                                  <i className="fab fa-facebook"></i>{" "}
-                                  {profile.social.facebook}
-                                </a>
-                              </p>
-                              ) : ('')}
+                                <p>
+                                  <a
+                                    className="text-secondary"
+                                    href={`https://facebook.com/${profile.social.facebook}`}
+                                    target="_blank"
+                                  >
+                                    <i className="fab fa-facebook"></i>{" "}
+                                    {profile.social.facebook}
+                                  </a>
+                                </p>
+                              ) : (
+                                ""
+                              )}
 
                               {profile.social.twitter ? (
-                              <p>
-                                <a
-                                  className="text-secondary"
-                                  href={`https://twitter.com/${profile.social.twitter}`}
-                                  target="_blank"
-                                >
-                                  <i className="fab fa-twitter"></i> @
-                                  {profile.social.twitter}
-                                </a>
-                              </p>
-                              ) : ('')}
-                              
+                                <p>
+                                  <a
+                                    className="text-secondary"
+                                    href={`https://twitter.com/${profile.social.twitter}`}
+                                    target="_blank"
+                                  >
+                                    <i className="fab fa-twitter"></i> @
+                                    {profile.social.twitter}
+                                  </a>
+                                </p>
+                              ) : (
+                                ""
+                              )}
+
                               {profile.social.instagram ? (
-                              <p>
-                                <a
-                                  className="text-secondary"
-                                  href={`https://instagram.com/${profile.social.instagram}`}
-                                  target="_blank"
-                                >
-                                  <i className="fab fa-instagram"></i>{" "}
-                                  {profile.social.instagram}
-                                </a>
-                              </p>
-                              ) : ('')}
-                              
+                                <p>
+                                  <a
+                                    className="text-secondary"
+                                    href={`https://instagram.com/${profile.social.instagram}`}
+                                    target="_blank"
+                                  >
+                                    <i className="fab fa-instagram"></i>{" "}
+                                    {profile.social.instagram}
+                                  </a>
+                                </p>
+                              ) : (
+                                ""
+                              )}
+
                               {profile.social.youtube ? (
-                              <p>
-                                <a
-                                  className="text-secondary"
-                                  href={`https://youtube.com/${profile.social.youtube}`}
-                                  target="_blank"
-                                >
-                                  <i className="fab fa-youtube"></i>{" "}
-                                  {profile.social.youtube}
-                                </a>
-                              </p>
-                              ) : ('')}
+                                <p>
+                                  <a
+                                    className="text-secondary"
+                                    href={`https://youtube.com/${profile.social.youtube}`}
+                                    target="_blank"
+                                  >
+                                    <i className="fab fa-youtube"></i>{" "}
+                                    {profile.social.youtube}
+                                  </a>
+                                </p>
+                              ) : (
+                                ""
+                              )}
                             </>
                           ) : (
-                            <p>You haven't added any social link in your profile. Adding social links may help your buddies to reach you 😉</p>
+                            <p>
+                              You haven't added any social link in your profile.
+                              Adding social links may help your buddies to reach
+                              you 😉
+                            </p>
                           )}
                         </div>
                       </Card.Body>
@@ -152,13 +164,17 @@ const Profile = ({
               </>
             ) : (
               <>
-                <p>
-                  You have not yet setup your profile, buddy! Create your
-                  profile now to earn 10BPs 😉
-                </p>
-                <Link to="/create-profile" className="btn btn-dark my-1">
-                  Create Profile
-                </Link>
+                <Card className="mx-4 mb-4 shadow-sm">
+                  <Card.Body className="text-center">
+                    <p>
+                      You have not yet setup your profile, buddy! Create your
+                      profile now to earn 10BPs 😉
+                    </p>
+                    <Link to="/create-profile" className="btn btn-dark my-1">
+                      Create Profile
+                    </Link>
+                  </Card.Body>
+                </Card>
               </>
             )}
           </Card.Text>
